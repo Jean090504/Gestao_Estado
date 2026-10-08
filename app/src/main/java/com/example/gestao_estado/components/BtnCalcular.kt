@@ -1,0 +1,32 @@
+package com.example.gestao_estado.components
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+@Composable
+fun BtnCalcular(
+    modifier: Modifier = Modifier,
+    onCalcular: () -> Unit
+) {
+    Button(
+        onClick = onCalcular,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp)
+    ) {
+        Text(
+            text = "CALCULAR",
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            fontSize = 14.sp
+        )
+    }
+}
