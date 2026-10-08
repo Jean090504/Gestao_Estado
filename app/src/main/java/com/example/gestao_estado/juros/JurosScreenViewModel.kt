@@ -1,178 +1,55 @@
 package com.example.gestao_estado.juros
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.gestao_estado.calculos.calcularJuros
 import com.example.gestao_estado.calculos.calcularMontante
-import com.example.gestao_estado.components.BtnCalcular
-import com.example.gestao_estado.components.CaixaDeEntrada
-import com.example.gestao_estado.components.CardResultado
 
-class JurosScreenViewMode: ViewModel() {
-    @Composable
-    fun JurosScreen(modifier: Modifier = Modifier) {
-        var capital by remember {
-            mutableStateOf("")
-        }
+class JurosScreenViewModel: ViewModel() {
+    private val _capital = MutableLiveData<String>("")
+    val capital: LiveData<String> = _capital
 
-        var taxa by remember {
-            mutableStateOf("")
-        }
+    private val _taxa = MutableLiveData<String>("")
+    val taxa: LiveData<String> = _taxa
 
-        var tempo by remember {
-            mutableStateOf("")
-        }
+    private val _tempo = MutableLiveData<String>("")
+    val tempo: LiveData<String> = _tempo
 
-        var juros by remember {
-            mutableDoubleStateOf(0.0)
-        }
+    private val _juros = MutableLiveData<Double>(0.0)
+    val juros: LiveData<Double> = _juros
 
-        var montante by remember {
-            mutableDoubleStateOf(0.0)
-        }
-
-
-        Column  (
-            modifier = modifier.fillMaxSize(),
-        ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(100.dp)
-                        .background(color = Color(136, 38, 199, 255))
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Calculadora Juros Simples",
-                        fontSize = 24.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 32.dp)
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .offset(y = (-30).dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFF9F6F6)
-                        ),
-                        elevation = CardDefaults.cardElevation(4.dp),
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp)
-                            ,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Text(
-                                text = "Dados do investimento",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+    private val _montante = MutableLiveData<Double>(0.0)
+    val montante: LiveData<Double> = _montante
 
 
 
-                            CaixaDeEntrada(
-                                modifier = Modifier.fillMaxWidth(),
-                                label = "Valor Incrementado",
-                                placeholder = "Quanto deseja investir ?",
-                                keyboardType = KeyboardType.Decimal,
-                                value = capital,
-//                            atualizarValor = {
-//                                capital = it
-//                            }
-                            ){
-                                capital = it
-                            }
 
 
-                            CaixaDeEntrada(
-                                modifier = Modifier.fillMaxWidth(),
-                                label = "Taxa de juros mensal",
-                                placeholder = "Qual a taxa de juros mensal ?",
-                                keyboardType = KeyboardType.Decimal,
-                                value = taxa,
-//                            atualizarValor = {
-//                                capital = it
-//                            }
-                            ){
-                                taxa = it
-                            }
+    fun onCapitalChanged(novoCapital: String) {
+        _capital.value = novoCapital
+    }
 
+    fun onTaxaChanged(novaTaxa: String) {
+        _taxa.value = novaTaxa
+    }
 
-                            CaixaDeEntrada(
-                                modifier = Modifier.fillMaxWidth(),
-                                label = "Período em meses",
-                                placeholder = "Qual o tempo em meses ?",
-                                keyboardType = KeyboardType.Decimal,
-                                value = tempo,
-//                            atualizarValor = {
-//                                capital = it
-//                            }
-                            ){
-                                tempo = it
-                            }
+    fun onTempoChanged(novoTempo: String) {
+        _tempo.value = novoTempo
+    }
 
-                            BtnCalcular(
-                                onCalcular = {
-                                    val capital = capital.toDoubleOrNull() ?: 0.0
-                                    val taxa = taxa.toDoubleOrNull() ?: 0.0
-                                    val tempo = tempo.toDoubleOrNull() ?: 0.0
+    fun calcularJurosInvestimento(){
+        _juros.value = calcularJuros(
+            capital = _capital.value!!.toDouble(),
+            taxa = _taxa.value!!.toDouble(),
+            tempo = _tempo.value!!.toDouble()
+        )
+    }
 
-                                    val resultadoJuros = calcularJuros(
-                                        capital = capital,
-                                        taxa = taxa,
-                                        tempo = tempo
-                                    )
-
-                                    juros = resultadoJuros
-                                    montante = calcularMontante(
-                                        capital = capital,
-                                        juros = resultadoJuros
-                                    )
-                                }
-                            )
-
-                        }
-                    }
-
-                    CardResultado(
-                        juros = juros,
-                        montante = montante
-                    )
-                }
-            }
-        }
+    fun calcularMontanteInvestimento(){
+        _montante.value = calcularMontante(
+            capital = _capital.value!!.toDouble(),
+            juros = _juros.value!!
+        )
     }
 }
